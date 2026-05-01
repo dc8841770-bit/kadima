@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Support - Kadima</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif; background: #F2EEE5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: white; padding: 40px; border-radius: 32px; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        h1 { color: #5B6B58; margin-bottom: 8px; font-size: 28px; font-family: "serif"; }
+        p { color: #7A8578; margin-bottom: 32px; font-size: 15px; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #354231; font-size: 14px; }
+        input, textarea { width: 100%; padding: 14px; border: 1px solid #E5E9E4; border-radius: 12px; font-size: 16px; box-sizing: border-box; background: #FAFBFA; outline: none; }
+        input:focus, textarea:focus { border-color: #5B6B58; }
+        button { width: 100%; padding: 16px; background: #5B6B58; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #4A5847; transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+        #status { margin-top: 20px; text-align: center; font-weight: 600; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Contact Kadima</h1>
+        <p>We are here to support your spiritual journey. Send us a message and we'll get back to you.</p>
+        
+        <div class="input-group">
+            <label>Name</label>
+            <input type="text" id="name" placeholder="Your name">
+        </div>
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="email@example.com">
+        </div>
+        <div class="input-group">
+            <label>Message</label>
+            <textarea id="message" rows="4" placeholder="How can we help?"></textarea>
+        </div>
+        
+        <button id="submitBtn" onclick="handleSubmit()">Send Message</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Your Verified Supabase Credentials
+        const SUPABASE_URL = 'https://tzvqlwvwrrlwhnbjocbj.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6dnFsd3Z3cnJsd2huYmpvY2JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NzY2OTAsImV4cCI6MjA5MzA1MjY5MH0.a_l2-65UsPo2kgVcQ8xitcoRbNsv1_ATxpvAllJtvbU';
+        
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function handleSubmit() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            const status = document.getElementById('status');
+            const btn = document.getElementById('submitBtn');
+
+            if (!name || !email || !message) {
+                status.innerText = "Please fill in all fields.";
+                status.style.color = "#d9534f";
+                return;
+            }
+
+            btn.disabled = true;
+            status.innerText = "Sending to Kadima Support...";
+            status.style.color = "#7A8578";
+
+            const { error } = await _supabase
+                .from('contact_submissions')
+                .insert([{ name, email, message }]);
+
+            if (error) {
+                status.innerText = "Error: " + error.message;
+                status.style.color = "#d9534f";
+                btn.disabled = false;
+            } else {
+                status.innerText = "Message sent! We will reach out soon.";
+                status.style.color = "#5B6B58";
+                // Clear form
+                document.getElementById('name').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('message').value = '';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
